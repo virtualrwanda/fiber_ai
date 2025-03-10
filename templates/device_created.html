@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Registered - Fiber Optic Fault Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fiber Optic Fault Detector</h1>
+            <p class="subtitle">Device Registration Complete</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/devices" class="active">Devices</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="card">
+            <h2>Device Successfully Registered</h2>
+            
+            <div class="alert success">
+                <p>Your device has been registered successfully!</p>
+            </div>
+            
+            <div class="device-details">
+                <div class="detail-group">
+                    <label>Device Name:</label>
+                    <span>{{ name }}</span>
+                </div>
+                
+                <div class="detail-group">
+                    <label>Device ID:</label>
+                    <span>{{ device_id }}</span>
+                </div>
+                
+                <div class="detail-group">
+                    <label>API Key:</label>
+                    <div class="api-key-container">
+                        <input type="text" id="apiKey" value="{{ api_key }}" readonly>
+                        <button onclick="copyApiKey()" class="btn-small">Copy</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert warning">
+                <p><strong>Important:</strong> Save your API key now! For security reasons, it will not be displayed again.</p>
+            </div>
+            
+            <div class="form-actions">
+                <a href="/devices" class="btn">Go to Devices</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Next Steps</h2>
+            <ol>
+                <li>Copy your API key and keep it secure</li>
+                <li>Configure your IoT device with the API key and server URL</li>
+                <li>Program your device to send measurements to the API endpoint</li>
+                <li>View your device data on the dashboard</li>
+            </ol>
+            
+            <div class="code-block">
+                <p><strong>API Endpoint:</strong></p>
+                <pre>POST /api/measurements
+Headers:
+  X-API-Key: {{ api_key }}
+
+Body:
+{
+  "signal_power": -25.5,
+  "attenuation": 0.8,
+  "distance": 5000
+}</pre>
+            </div>
+        </div>
+
+        <footer>
+            <p>Fiber Optic Fault Detector &copy; 2025 | IoT-Enabled Test Deployment</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyApiKey() {
+            const apiKeyInput = document.getElementById('apiKey');
+            apiKeyInput.select();
+            document.execCommand('copy');
+            alert('API key copied to clipboard!');
+        }
+    </script>
+</body>
+</html>

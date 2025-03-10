@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devices - Fiber Optic Fault Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_notification.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fiber Optic Fault Detector</h1>
+            <p class="subtitle">Device Management</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/devices" class="active">Devices</a></li>
+                    <li><a href="/notifications">Notifications</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="card">
+            <div class="card-header-with-action">
+                <h2>Registered Devices</h2>
+                <a href="/devices/new" class="btn">Register New Device</a>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Created</th>
+                            <th>Alert Threshold</th>
+                            <th>Alert Email</th>
+                            <th>Last Alert</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if devices %}
+                            {% for device in devices %}
+                            <tr>
+                                <td>{{ device.name }}</td>
+                                <td><span class="device-id">{{ device.id[:8] }}...</span></td>
+                                <td>{{ device.created_at }}</td>
+                                <td>{{ (device.alert_threshold * 100)|int }}%</td>
+                                <td>{{ device.alert_email or 'Not set' }}</td>
+                                <td>{{ device.last_alert_sent or 'Never' }}</td>
+                                <td>
+                                    <a href="/devices/{{ device.id }}/edit" class="btn-small">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="empty-table">No devices registered yet. <a href="/devices/new">Register your first device</a>.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Device Management Guide</h2>
+            <div class="content-section">
+                <h3>Registering a Device</h3>
+                <p>When you register a new device, you'll receive an API key that your IoT device will use to authenticate with the system. This key is only shown once, so make sure to save it securely.</p>
+                
+                <h3>Alert Threshold</h3>
+                <p>The alert threshold determines how confident the system must be before sending an email notification. A higher threshold means fewer but more accurate alerts.</p>
+                
+                <h3>Device-specific Email</h3>
+                <p>You can set a device-specific email address to receive alerts for that particular device. This is in addition to the global recipients configured in the system.</p>
+                
+                <h3>API Integration</h3>
+                <p>Your IoT devices should send measurements to the API endpoint using the provided API key. Here's an example:</p>
+                
+                <div class="code-block">
+                    <pre>POST /api/measurements
+Headers:
+  X-API-Key: your-api-key
+
+Body:
+{
+  "signal_power": -25.5,
+  "attenuation": 0.8,
+  "distance": 5000
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Fiber Optic Fault Detector &copy; 2025 | Email Notification System</p>
+        </footer>
+    </div>
+</body>
+</html>

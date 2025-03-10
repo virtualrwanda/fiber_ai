@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fiber Optic Fault Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fiber Optic Fault Detector</h1>
+            <p class="subtitle">IoT Monitoring Dashboard</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/dashboard" class="active">Dashboard</a></li>
+                    <li><a href="/devices">Devices</a></li>
+                    <li><a href="/devices/new">ADD Devices</a></li>
+                    
+            </nav>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Connected Devices</h3>
+                <div class="stat-value" id="deviceCount">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Measurements</h3>
+                <div class="stat-value" id="measurementCount">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Fault Rate</h3>
+                <div class="stat-value" id="faultRate">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Last Update</h3>
+                <div class="stat-value" id="lastUpdate">-</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card chart-card">
+                <h2>Fault Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="faultDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Signal Power Trends</h2>
+                <div class="chart-container">
+                    <canvas id="signalPowerChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Recent Measurements</h2>
+            <div class="table-container">
+                <table id="recentMeasurements">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Device</th>
+                            <th>Signal Power</th>
+                            <th>Attenuation</th>
+                            <th>Distance</th>
+                            <th>Fault Type</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="loading-row">Loading data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>Fiber Optic Fault Detector &copy; 2025 | IoT-Enabled Test Deployment</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

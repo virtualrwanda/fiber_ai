@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiber Optic Fault Detector - IoT Enabled</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fiber Optic Fault Detector</h1>
+            <p class="subtitle">IoT-Enabled Test Mode</p>
+            <nav>
+                <ul>
+                    <li><a href="/" class="active">Home</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/devices">Devices</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Input Parameters</h2>
+                <div class="form-group">
+                    <label for="signalPower">Signal Power (dB)</label>
+                    <div class="range-container">
+                        <input type="range" id="signalPower" min="-50" max="-10" step="0.1" value="-25">
+                        <span id="signalPowerValue">-25 dB</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="attenuation">Attenuation (dB/km)</label>
+                    <div class="range-container">
+                        <input type="range" id="attenuation" min="0.1" max="3.0" step="0.1" value="0.5">
+                        <span id="attenuationValue">0.5 dB/km</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="distance">Distance (m)</label>
+                    <div class="range-container">
+                        <input type="range" id="distance" min="50" max="4000" step="50" value="2000">
+                        <span id="distanceValue">4000 m</span>
+                    </div>
+                </div>
+
+                <button id="analyzeBtn" class="btn">Analyze Fiber</button>
+                <div id="loading" class="loading hidden">Analyzing...</div>
+            </div>
+
+            <div>
+                <div id="resultAlert" class="alert hidden">
+                    <div id="resultText"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Prediction Results</h2>
+                    <div id="results">
+                        <p>Adjust the parameters and click "Analyze Fiber" to see results.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>IoT Integration</h2>
+                    <p>This system can receive measurements from remote IoT devices.</p>
+                    <p style="margin-top: 0.5rem;">To connect a device:</p>
+                    <ol style="margin: 0.5rem 0 1rem 1.5rem;">
+                        <li>Go to the <a href="/devices">Devices</a> page</li>
+                        <li>Create a new device and get an API key</li>
+                        <li>Configure your IoT device to send measurements to the API</li>
+                    </ol>
+                    <a href="/devices/new" class="btn secondary-btn">Register New Device</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Fiber Optic Fault Detector &copy; 2025 | IoT-Enabled Test Deployment</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

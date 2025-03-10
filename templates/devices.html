@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devices - Fiber Optic Fault Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fiber Optic Fault Detector</h1>
+            <p class="subtitle">IoT Device Management</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/devices" class="active">Devices</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="card">
+            <div class="card-header-with-action">
+                <h2>Registered Devices</h2>
+                <a href="/devices/new" class="btn">Register New Device</a>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Device ID</th>
+                            <th>Name</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if devices %}
+                            {% for device in devices %}
+                            <tr>
+                                <td>{{ device.id }}</td>
+                                <td>{{ device.name }}</td>
+                                <td>{{ device.created_at }}</td>
+                                <td>
+                                    <a href="#" class="btn-small" onclick="viewDeviceDetails('{{ device.id }}')">Details</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="empty-table">No devices registered yet. <a href="/devices/new">Register your first device</a>.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>IoT Device Integration</h2>
+            <div class="content-section">
+                <h3>How to Connect Your IoT Device</h3>
+                <ol>
+                    <li>Register a new device to get an API key</li>
+                    <li>Configure your IoT device with the API key</li>
+                    <li>Send measurements to the API endpoint</li>
+                </ol>
+
+                <h3>API Endpoints</h3>
+                <div class="code-block">
+                    <p><strong>Submit Measurement:</strong></p>
+                    <pre>POST /api/measurements
+Headers:
+  X-API-Key: your-api-key
+
+Body:
+{
+  "signal_power": -25.5,
+  "attenuation": 0.8,
+  "distance": 5000
+}</pre>
+                </div>
+
+                <div class="code-block">
+                    <p><strong>Get Device Measurements:</strong></p>
+                    <pre>GET /api/measurements?limit=100&offset=0
+Headers:
+  X-API-Key: your-api-key</pre>
+                </div>
+
+                <h3>Example Code (Arduino/ESP8266)</h3>
+                <div class="code-block">
+                    <pre>#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266HTTPClient.h&gt;
+#include &lt;ArduinoJson.h&gt;
+
+const char* ssid = "YourWiFiSSID";
+const char* password = "YourWiFiPassword";
+const char* apiKey = "your-api-key";
+const char* serverUrl = "http://your-server-url/api/measurements";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  
+  Serial.println("Connected to WiFi");
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    // Read sensor values (replace with actual sensor code)
+    float signalPower = -25.5;  // Example value
+    float attenuation = 0.8;    // Example value
+    float distance = 5000;      // Example value
+    
+    // Create JSON document
+    StaticJsonDocument&lt;200&gt; doc;
+    doc["signal_power"] = signalPower;
+    doc["attenuation"] = attenuation;
+    doc["distance"] = distance;
+    
+    // Serialize JSON to string
+    String jsonString;
+    serializeJson(doc, jsonString);
+    
+    // Send HTTP POST request
+    HTTPClient http;
+    http.begin(serverUrl);
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("X-API-Key", apiKey);
+    
+    int httpResponseCode = http.POST(jsonString);
+    
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.println("HTTP Response code: " + String(httpResponseCode));
+      Serial.println(response);
+    } else {
+      Serial.println("Error on sending POST: " + String(httpResponseCode));
+    }
+    
+    http.end();
+  }
+  
+  // Wait before next reading
+  delay(60000);  // Send data every minute
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Fiber Optic Fault Detector &copy; 2025 | IoT-Enabled Test Deployment</p>
+        </footer>
+    </div>
+
+    <script>
+        function viewDeviceDetails(deviceId) {
+            alert("Device details functionality will be implemented in a future update.");
+        }
+    </script>
+</body>
+</html>
