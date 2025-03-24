@@ -1,5 +1,5 @@
 flask
-numpy: 1.26.4
+numpy
 flask-wtf: 1.2.2
 wtforms: 3.1.2
 flask-sqlalchemy: 3.1.1
