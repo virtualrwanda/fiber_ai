@@ -1,6 +1,6 @@
 flask
 numpy
-flask-wtf: 1.2.2
+flask-wtf
 wtforms
 flask-sqlalchemy: 3.1.1
 flask-login: 0.6.3
