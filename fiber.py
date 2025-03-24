@@ -14,6 +14,18 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import threading
 import logging
+from flask import current_app
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, Email
+from flask import Flask, render_template, redirect, url_for, request, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms.validators import DataRequired, Email, Length
+from wtforms import StringField, PasswordField
+from flask_wtf.csrf import CSRFProtect
+from flask import session
 
 # Configure logging
 logging.basicConfig(
@@ -24,10 +36,10 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = 'your_random_secret_key_here'
+csrf = CSRFProtect(app)
 # Configuration
 API_SECRET = os.environ.get('API_SECRET', 'your-secret-key-change-this')
 DB_PATH = os.environ.get('DB_PATH', 'fiber_measurements.db')
@@ -93,14 +105,29 @@ def init_db():
         FOREIGN KEY (measurement_id) REFERENCES measurements (id)
     )
     ''')
+     # Create users table if it doesn't exist
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
     
     conn.commit()
     conn.close()
-    logger.info("Database initialized")
+    # logger.info("Database initialized")
 
 # Initialize database on startup
 init_db()
 
+def get_db_connection():
+    """Connect to the SQLite database and return the connection."""
+    # Use the DB_PATH variable for the database location
+    conn = sqlite3.connect(DB_PATH)  # Replace DB_PATH with the actual path to your database
+    conn.row_factory = sqlite3.Row  # This allows us to access columns by name (e.g., user['email'])
+    return conn
 # Simple rule-based model
 def predict_fault(signal_power, attenuation, distance):
     """
@@ -351,11 +378,14 @@ def require_api_key(f):
     return decorated
 
 # Routes
-@app.route('/')
-def home():
+# @app.route('/')
+# def home():
+#     """Render the home page"""
+#     return render_template('login.html')
+@app.route('/x')
+def x():
     """Render the home page"""
     return render_template('index.html')
-
 @app.route('/predict', methods=['POST'])
 def predict():
     """Web UI endpoint for making predictions"""
@@ -751,11 +781,83 @@ def generate_api_key():
     api_key = hmac.new(API_SECRET.encode(), random_bytes, hashlib.sha256).hexdigest()
     return api_key
 
-@app.route('/api/health')
-def health_check():
-    """Health check endpoint"""
-    return jsonify({'status': 'healthy'})
+class SignupForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    """Handle user signup"""
+    form = SignupForm()  # Create an instance of the SignupForm
+    
+    # Check if the form is valid when submitted
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        
+        # Hash the password
+        hashed_password = generate_password_hash(password)
+        
+        try:
+            # Connect to the database and insert user
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # Check if the email already exists in the database
+            cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+            existing_user = cursor.fetchone()
+            
+            if existing_user:
+                flash('Email already exists. Please log in.', 'danger')
+                return redirect(url_for('login'))  # Redirect to login if the user exists
+            
+            # Insert the new user into the database
+            cursor.execute('''
+            INSERT INTO users (email, password)
+            VALUES (?, ?)
+            ''', (email, hashed_password))
+            conn.commit()  # Commit the transaction
+            
+            flash('Account created successfully! Please log in.', 'success')
+            return redirect(url_for('login'))  # Redirect to login page after successful signup
+            
+        except sqlite3.Error as e:
+            flash(f'Error: {e}', 'danger')  # Show the error if any SQLite error occurs
+        finally:
+            conn.close()  # Always close the database connection
+
+    return render_template('signup.html', form=form)  # Pass the 'form' to the template
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField
+from wtforms.validators import InputRequired
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()  # Assuming LoginForm is defined properly
+    
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        
+        # Query the database for the user
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and check_password_hash(user['password'], password):  # Check if password matches
+            # User is authenticated
+            session['user_id'] = user['id']  # Store user id in the session
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))  # Redirect to the dashboard after successful login
+        else:
+            flash('Invalid email or password. Please try again.', 'danger')
+
+    return render_template('login.html', form=form)
 if __name__ == '__main__':
     # Use a single worker to reduce memory usage
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), threaded=True)
