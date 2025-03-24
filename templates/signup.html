@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Fiber Optic Fault Detector</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .fiber-gradient {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        }
+        .light-path {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+            animation: lightPulse 3s infinite;
+            border-radius: 1px;
+        }
+        @keyframes lightPulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+        .form-input:focus {
+            border-color: #3a7bd5;
+            box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="relative overflow-hidden">
+        <!-- Animated light paths representing fiber optics -->
+        <div class="light-path" style="top: 15%; left: 0; width: 100%; animation-delay: 0s;"></div>
+        <div class="light-path" style="top: 35%; left: 0; width: 100%; animation-delay: 0.5s;"></div>
+        <div class="light-path" style="top: 55%; left: 0; width: 100%; animation-delay: 1s;"></div>
+        <div class="light-path" style="top: 75%; left: 0; width: 100%; animation-delay: 1.5s;"></div>
+        <div class="light-path" style="top: 95%; left: 0; width: 100%; animation-delay: 2s;"></div>
+        
+        <div class="container mx-auto px-4 py-16 flex justify-center">
+            <div class="w-full max-w-md">
+                <div class="bg-white rounded-lg shadow-xl overflow-hidden">
+                    <!-- Header with fiber optic theme -->
+                    <div class="fiber-gradient p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <h1 class="text-2xl font-bold">Fiber Optic Fault Detector</h1>
+                            <i class="fas fa-network-wired text-2xl"></i>
+                        </div>
+                        <p class="mt-2 text-sm opacity-90">High-speed network diagnostics system</p>
+                    </div>
+                    
+                    <div class="p-8">
+                        <h2 class="text-xl font-semibold mb-6 text-gray-700">Create Your Account</h2>
+                        
+                        <!-- Flash messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                                {% for category, message in messages %}
+                                    <p class="text-red-600 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                        
+                        <!-- Signup Form -->
+                        <form method="POST">
+                            {{ form.hidden_tag() }}  <!-- This includes the CSRF token -->
+                            
+                            <div class="mb-5">
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                {{ form.email(class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none transition duration-150 ease-in-out", placeholder="your.email@example.com") }}
+                            </div>
+                            
+                            <div class="mb-5">
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                {{ form.password(class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none transition duration-150 ease-in-out", placeholder="Create a secure password") }}
+                                <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters with letters and numbers</p>
+                            </div>
+                            
+                            <button type="submit" class="w-full fiber-gradient text-white py-2 px-4 rounded-md hover:opacity-90 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Create Account
+                            </button>
+                        </form>
+                        
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600">Already have an account? <a href="/login" class="text-blue-600 hover:text-blue-800 font-medium">Login here</a></p>
+                        </div>
+                        
+                        <!-- Fiber optic tech features -->
+                        <div class="mt-8 pt-6 border-t border-gray-200">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Fiber Fault Detection Features:</h3>
+                            <div class="grid grid-cols-2 gap-3 text-xs">
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>
+                                    <span>Real-time monitoring</span>
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+                                    <span>Precise fault location</span>
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-bell text-blue-500 mr-2"></i>
+                                    <span>Instant alerts</span>
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                                    <span>Performance analysis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-center text-gray-500 text-xs mt-4">
+                    &copy; 2025 Fiber Optic Solutions. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation to enhance the fiber optic theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const paths = document.querySelectorAll('.light-path');
+            paths.forEach(path => {
+                path.style.left = '-100%';
+                setInterval(() => {
+                    path.style.left = '-100%';
+                    setTimeout(() => {
+                        path.style.transition = 'left 2s linear';
+                        path.style.left = '100%';
+                    }, 50);
+                    setTimeout(() => {
+                        path.style.transition = 'none';
+                    }, 2050);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>
