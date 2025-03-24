@@ -52,7 +52,7 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
 EMAIL_USERNAME = os.environ.get('EMAIL_USERNAME', 'info@vrt.rw')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', 'TheGreat@123!')
 EMAIL_FROM = os.environ.get('EMAIL_FROM', 'info@vrt.rw')
-EMAIL_TO = os.environ.get('EMAIL_TO', 'nepobutata@gmail.com').split(',')
+EMAIL_TO = os.environ.get('EMAIL_TO', 'jadokanamugire@gmail.com').split(',')
 EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '[Fiber Optic Alert]')
 
 # Notification settings
